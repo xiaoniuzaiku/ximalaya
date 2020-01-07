@@ -63,7 +63,7 @@ ${}
     public void setOnIndicatorTapClicListener(OnIndicatorTapClicListener listener){
         this.mMOnTabClickListener = listener;
     }
-    //设置indicator按钮与fragment的联动，暴露接口
+    //设置indicator按钮与fragment的联动，暴露接口dd
     public interface OnIndicatorTapClicListener{
         void onTabclick(int index);
     }
