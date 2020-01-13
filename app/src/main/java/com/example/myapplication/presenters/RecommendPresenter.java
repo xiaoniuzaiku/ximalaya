@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.security.auth.callback.Callback;
+
 /*
 PACKAGE_NAME:com.example.myapplication.presenters
 DATE:2020/1/9
@@ -42,6 +44,7 @@ private List<IRecommendViewCallback> mCallbacks=new ArrayList<>();
     //获取数据方法
     @Override
     public void getRecommendList() {
+        onLoading();
         Map<String, String> map = new HashMap<>();
         //显示一页多少条信息
         map.put(DTransferConstants.LIKE_COUNT, Constants.RECOMMAND_COUNT+"");
@@ -63,20 +66,35 @@ private List<IRecommendViewCallback> mCallbacks=new ArrayList<>();
             @Override
             //数据获取失败
             public void onError(int i, String s) {
-                logutils.d(TAG,"error-->"+i);
-                logutils.d(TAG,"errormsg-->"+s);
+                handlererror();
+
             }
         });
     }
 
+    private void handlererror() {
+        onNetworkErro();
+    }
 
 
     private void handlerRecommendList(List<Album> albumList) {
-        if (mCallbacks != null) {
-            for (IRecommendViewCallback callback : mCallbacks) {
-                callback.onRecommendListLoad(albumList);
+        logutils.d(TAG,"handlerRecommendList"+albumList);
+        //通知ui更新
+        //通知UI更新
+        if(albumList != null) {
+            //测试，清空一下，让界面显示空
+            //albumList.clear();
+            if(albumList.size() == 0) {
+                for(IRecommendViewCallback callback : mCallbacks) {
+                    callback.onEmpty();
+                }
+            } else {
+                for(IRecommendViewCallback callback : mCallbacks) {
+                    callback.onRecommendListLoad(albumList);
+                }
             }
         }
+
     }
 
     @Override
@@ -87,6 +105,27 @@ private List<IRecommendViewCallback> mCallbacks=new ArrayList<>();
     @Override
     public void loadMore() {
 
+    }
+
+    @Override
+    public void onNetworkErro() {
+        if (mCallbacks != null) {
+            for (IRecommendViewCallback callback : mCallbacks) {
+                callback.onNetworkErro();
+            }
+        }
+    }
+
+    @Override
+    public void onEmpty() {
+
+    }
+
+    @Override
+    public void onLoading() {
+        for(IRecommendViewCallback callback : mCallbacks) {
+            callback.onLoading();
+        }
     }
 
     @Override
